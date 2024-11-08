@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text & Image Processing Tool</title>
+    <link rel="stylesheet" href="{{ url_for('media.static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="home-btn">Home</a>
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept=".txt,.jpg,.jpeg,.png" style="display: none;">
+            <button class="btn" onclick="document.getElementById('fileInput').click()">Upload a file</button>
+        </div>
+
+        <div class="content-section">
+            <h3>Original Content:</h3>
+            <div id="fileContent" class="window">
+                <div id="textContent"></div>
+                <img id="imageContent" style="display: none; max-width: 100%;">
+            </div>
+        </div>
+
+        <div class="process-section">
+            <button class="btn" onclick="processContent()">PreProcess</button>
+            <div id="processedContent" class="window">
+                <div id="tokenContent"></div>
+                <img id="processedImage" style="display: none; max-width: 100%;">
+            </div>
+        </div>
+
+        <div class="augment-section">
+            <button class="btn" onclick="augmentContent()">Augment</button>
+            <div id="augmentedContent" class="window">
+                <div id="augmentedText"></div>
+                <div id="augmentedImages" style="display: none;">
+                    <div class="image-container">
+                        <p>Grayscale:</p>
+                        <img id="grayImage">
+                    </div>
+                    <div class="image-container">
+                        <p>Rotated:</p>
+                        <img id="rotatedImage">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('media.static', filename='js/media.js') }}"></script>
+</body>
+</html>

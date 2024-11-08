@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Processing Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h2><center><u><i>Audio Processing</i></u></center></h2>
+    <div class="container">
+        <div class="header-section">
+            <div class="description-box">
+                <p>
+                    The audio processing feature allows users to upload and playback audio files seamlessly. 
+                    It includes the capability to generate spectrograms for visual analysis, as well as extract 
+                    essential audio features for further processing. Additionally, the feature supports audio 
+                    augmentation, which encompasses high frequency and low frequency processing techniques to 
+                    enhance the audio experience.
+                </p>
+            </div>
+        </div>
+        <a href="/" class="home-btn">Home</a>
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept="audio/*" style="display: none;">
+            <button class="btn" onclick="document.getElementById('fileInput').click()">Upload a file</button>
+        </div>
+
+        <div class="content-section">
+            <h3>Original Content:</h3>
+            <div class="window">
+                <div id="audioContent" class="audio-player-container">
+                    <audio id="audioPlayer" controls></audio>
+                </div>
+            </div>
+        </div>
+
+        <div class="process-section">
+            <button class="btn" onclick="processAudio()">PreProcess</button>
+            <div class="window">
+                <div id="processedAudio">
+                    <div class="spectrogram-container">
+                        <h4>Spectrogram:</h4>
+                        <img id="spectrogramImage" style="display: none;">
+                    </div>
+                    <div id="audioFeatures" class="features-container">
+                        <h4>Audio Features:</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="augment-section">
+            <button class="btn" onclick="augmentAudio()">Augment</button>
+            <div class="window">
+                <div id="augmentedAudio">
+                    <div class="audio-container">
+                        <h4>High Frequency Version:</h4>
+                        <audio id="highFreqAudio" controls></audio>
+                    </div>
+                    <div class="audio-container">
+                        <h4>Low Frequency Version:</h4>
+                        <audio id="lowFreqAudio" controls></audio>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAudioData = null;
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Clear previous content
+            clearContent();
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentAudioData = e.target.result;
+                document.getElementById('audioPlayer').src = currentAudioData;
+            };
+            reader.onerror = function(e) {
+                alert('Error reading audio file');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function clearContent() {
+            document.getElementById('audioPlayer').src = '';
+            document.getElementById('spectrogramImage').style.display = 'none';
+            document.getElementById('audioFeatures').innerHTML = '<h4>Audio Features:</h4>';
+            document.getElementById('highFreqAudio').src = '';
+            document.getElementById('lowFreqAudio').src = '';
+        }
+
+        async function processAudio() {
+            if (!currentAudioData) {
+                alert('Please upload an audio file first');
+                return;
+            }
+
+            try {
+                const response = await fetch('/process_audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ audio: currentAudioData })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                // Display spectrogram
+                const spectrogramImg = document.getElementById('spectrogramImage');
+                spectrogramImg.src = 'data:image/png;base64,' + data.spectrogram;
+                spectrogramImg.style.display = 'block';
+
+                // Display features
+                const featuresContainer = document.getElementById('audioFeatures');
+                featuresContainer.innerHTML = '<h4>Audio Features:</h4>';
+                Object.entries(data.features).forEach(([key, value]) => {
+                    const p = document.createElement('p');
+                    p.textContent = `${key}: ${value.toFixed(4)}`;
+                    featuresContainer.appendChild(p);
+                });
+            } catch (error) {
+                console.error('Error processing audio:', error);
+                alert('Error processing audio: ' + error.message);
+            }
+        }
+
+        async function augmentAudio() {
+            if (!currentAudioData) {
+                alert('Please upload an audio file first');
+                return;
+            }
+
+            try {
+                const response = await fetch('/augment_audio', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ audio: currentAudioData })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                document.getElementById('highFreqAudio').src = 'data:audio/wav;base64,' + data.high_freq;
+                document.getElementById('lowFreqAudio').src = 'data:audio/wav;base64,' + data.low_freq;
+            } catch (error) {
+                console.error('Error augmenting audio:', error);
+                alert('Error augmenting audio: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html> 

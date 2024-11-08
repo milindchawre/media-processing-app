@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3D Processing Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/3d.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <h2><center><u><i>3D Processing</i></u></center></h2>
+    <div class="container">
+        <p>The 3D processing feature allows users to upload and display 3D models seamlessly. 
+            It includes the capability to analyze 3D models to display vertex count, face count, geometry statistics, 
+            and dimension calculations. Additionally, the feature supports 3D model augmentation with animation effects.</p>
+        <a href="/" class="home-btn">Home</a>
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept=".obj" style="display: none;">
+            <button class="btn" onclick="document.getElementById('fileInput').click()">Upload a file</button>
+        </div>
+
+        <div class="content-section">
+            <h3>Original Content:</h3>
+            <div class="window">
+                <div id="originalViewer" class="viewer"></div>
+            </div>
+        </div>
+
+        <div class="process-section">
+            <button class="btn" onclick="process3D()">PreProcess</button>
+            <div class="window">
+                <div id="processedViewer" class="viewer"></div>
+                <div id="features" class="features-container"></div>
+            </div>
+        </div>
+
+        <div class="augment-section">
+            <button class="btn" onclick="augment3D()">Augment</button>
+            <div class="window">
+                <div id="augmentedViewer" class="viewer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/3d.js') }}"></script>
+</body>
+</html> 

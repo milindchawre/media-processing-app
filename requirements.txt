@@ -1,0 +1,10 @@
+flask
+nltk
+tiktoken
+pillow
+numpy
+librosa
+matplotlib
+soundfile
+scipy
+werkzeug
